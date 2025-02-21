@@ -1,0 +1,126 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Multi-Tier Web Application Infrastructure'
+
+Parameters:
+  VpcCidr:
+    Type: String
+    Default: '10.0.0.0/16'
+    Description: 'entire IP address range available for the VPC'
+
+  SubnetCidrPublic:
+    Type: String
+    Default: '10.0.1.0/24'
+    Description: 'require a route table pointing to an Internet Gateway.'
+
+  SubnetCidrPrivate:
+    Type: String
+    Default: '10.0.2.0/24'
+    Description: 'can use a NAT Gateway for outgoing internet access.'
+
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+
+  ImageId:
+    Type: String
+    Description: 'AMI ID for the EC2 instance'
+    Default: 'ami-053a45fff0a704a47'
+
+  DBUsername:
+    Type: String
+    NoEcho: true
+    Default: 'maede'
+
+  # DBPassword:
+  #   Type: SecureString
+  #   NoEcho: true
+  #   Default: '{{resolve:ssm:/dev/rds/password:10}}'
+
+  InstanceType:
+    Type: String
+    Default: 't2.micro'
+
+  DbInstanceType:
+    Type: String
+    Default: 'db.t3.micro'
+
+Resources:
+  DevVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: dev-vpc
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref DevVPC
+      CidrBlock: !Ref SubnetCidrPublic
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [0, !GetAZs '']
+
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref DevVPC
+      CidrBlock: !Ref SubnetCidrPrivate
+      AvailabilityZone: !Select [1, !GetAZs '']
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: 'Allow HTTP and SSH access'
+      VpcId: !Ref DevVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: '0.0.0.0/0'
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: '0.0.0.0/0'
+      Tags:
+        - Key: Name
+          Value: dev-scurity
+
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: 'Database Subnet Group'
+      SubnetIds:
+        - !Ref PublicSubnet
+        - !Ref PrivateSubnet
+
+  RDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      Engine: postgres
+      DBInstanceClass: !Ref DbInstanceType
+      AllocatedStorage: 5
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: '{{resolve:ssm-secure:/dev/rds/password}}'
+      VPCSecurityGroups:
+        - !GetAtt SecurityGroup.GroupId
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      MultiAZ: false
+      PubliclyAccessible: false
+      Tags:
+        - Key: Name
+          Value: dev-postgres
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      ImageId: !Ref ImageId
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds:
+        - !Ref SecurityGroup
+      Tags:
+        - Key: Name
+          Value: dev-ec2
