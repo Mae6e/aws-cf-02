@@ -5,11 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-
     "deploy-mt": "node --env-file=.env scripts/create-stack.js multi-tier-stack",
     "update-mt": "node --env-file=.env scripts/update-stack.js multi-tier-stack",
     "delete-mt": "bash cli/delete-stack.sh multi-tier-stack",
-
     "deploy-asg": "node --env-file=.env scripts/create-stack.js auto-scaling-stack",
     "update-asg": "node --env-file=.env scripts/update-stack.js auto-scaling-stack",
     "delete-asg": "bash cli/delete-stack.sh auto-scaling-stack"
@@ -17,6 +15,7 @@
   "author": "mae6e",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-cloudformation": "^3.750.0"
+    "@aws-sdk/client-cloudformation": "^3.750.0",
+    "aws-cdk-lib": "^2.180.0"
   }
 }

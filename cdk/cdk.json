@@ -1,0 +1,12 @@
+{
+  "context": {
+    "vpcCidr": "10.0.0.0/16",
+    "subnetCidrPublic": "10.0.1.0/24",
+    "subnetCidrPrivate": "10.0.2.0/24",
+    "keyName": "your-key-pair",
+    "imageId": "ami-053a45fff0a704a47",
+    "dbUsername": "maede",
+    "instanceType": "t2.micro",
+    "dbInstanceType": "db.t3.micro"
+  }
+}
