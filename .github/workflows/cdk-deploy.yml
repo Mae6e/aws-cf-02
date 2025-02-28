@@ -21,9 +21,13 @@ jobs:
         with:
           node-version: 22 # Use the Node.js version compatible with your CDK version
 
-      # Install dependencies
+      # Install pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # Install dependencies using pnpm
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Debug AWS credentials
         run: |
@@ -41,12 +45,12 @@ jobs:
 
       # Bootstrap the CDK (if not already bootstrapped)
       - name: Bootstrap CDK
-        run: npx cdk bootstrap
+        run: pnpm exec cdk bootstrap
 
       # Synthesize the CDK stack
       - name: Synthesize CDK stack
-        run: npx cdk synth
+        run: pnpm exec cdk synth
 
       # Deploy the CDK stack
       - name: Deploy CDK stack
-        run: npx cdk deploy --require-approval never
+        run: pnpm exec cdk deploy --require-approval never
