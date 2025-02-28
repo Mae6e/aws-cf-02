@@ -42,10 +42,10 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Bootstrap CDK
-        run: pnpm exec cdk bootstrap
+        run: cdk bootstrap
 
       - name: Synthesize CDK stack
-        run: pnpm exec cdk synth
+        run: cdk synth
 
       - name: Deploy CDK stack
-        run: pnpm exec cdk deploy --require-approval never
+        run: cdk deploy --require-approval never
