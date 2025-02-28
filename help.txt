@@ -1,5 +1,6 @@
 npm i -g aws-cdk
 cdk init app --language javascript
-cdk synth
 cdk bootstrap
+cdk synth
 cdk deploy
+cdk destroy
