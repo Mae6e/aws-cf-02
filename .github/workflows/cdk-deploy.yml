@@ -11,23 +11,22 @@ jobs:
     environment: aws
 
     steps:
-      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22 # Use the Node.js version compatible with your CDK version
+          node-version: 22
 
-      # Install pnpm
       - name: Install pnpm
         run: npm install -g pnpm
 
-      # Install dependencies using pnpm
       - name: Install dependencies
         run: pnpm install
+
+      - name: Install aws-cdk globally
+        run: pnpm add -g aws-cdk
 
       - name: Debug AWS credentials
         run: |
@@ -35,7 +34,6 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY != '' && '***' || 'NOT SET' }}"
           echo "AWS_REGION: ${{ secrets.AWS_REGION != '' && '***' || 'NOT SET' }}"
 
-      # Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -43,14 +41,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Bootstrap the CDK (if not already bootstrapped)
       - name: Bootstrap CDK
         run: pnpm exec cdk bootstrap
 
-      # Synthesize the CDK stack
       - name: Synthesize CDK stack
         run: pnpm exec cdk synth
 
-      # Deploy the CDK stack
       - name: Deploy CDK stack
         run: pnpm exec cdk deploy --require-approval never
