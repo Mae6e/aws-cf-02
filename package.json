@@ -4,7 +4,7 @@
   "description": "the aws cloud-formation learn",
   "main": "index.js",
   "bin": {
-    "app": "bin/multi-tier-cdk-app.js"
+    "app": "bin/auto-scaling-cdk-app.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

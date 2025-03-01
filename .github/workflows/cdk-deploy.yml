@@ -47,8 +47,9 @@ jobs:
       - name: Synthesize CDK stack
         run: cdk synth
 
-      - name: Destroy stack
-        run: cdk destroy --force
+      - name: Deploy CDK stack
+        run: cdk deploy --require-approval never
 
-      # - name: Deploy CDK stack
-      #   run: cdk deploy --require-approval never
+        #! destroy stack for test
+        # - name: Destroy stack
+        #   run: cdk destroy --force

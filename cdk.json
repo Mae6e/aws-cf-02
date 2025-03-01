@@ -1,3 +1,3 @@
 {
-  "app": "node bin/multi-tier-cdk-app.js"
+  "app": "node bin/auto-scaling-cdk-app.js"
 }
